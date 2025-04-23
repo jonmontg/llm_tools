@@ -67,7 +67,7 @@ class VectorDatabase:
     cache_endpoint = ["embeddings", self.embedding_model.model, text_sha]
     if self.cache.check(*cache_endpoint):
       return self.cache.read_cache_np(*cache_endpoint)
-    result = self.embedding_model.query(text, print_usage=True)
+    result = self.embedding_model.query(text)
     if len(result) == 0:
       raise Exception(f"Invalid embedding array for {text}")
     self.cache.save_cache_np(result, *cache_endpoint)
