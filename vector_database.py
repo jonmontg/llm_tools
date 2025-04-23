@@ -1,4 +1,4 @@
-from lib.llm_query_managers.embeddings import get_embedding_model
+from .embeddings import get_embedding_model
 from pathlib import Path
 import hashlib
 import numpy as np
