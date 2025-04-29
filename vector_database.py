@@ -1,6 +1,7 @@
 import hashlib
 import numpy as np
 import pandas as pd
+import sys
 import faiss
 
 class VectorDatabase:
@@ -33,7 +34,7 @@ class VectorDatabase:
     self.data = pd.DataFrame({
       "document": docs,
       "embedding": [self._get_embedding(doc) for doc in docs]
-    })
+    }).dropna(subset=['embedding'])
     embeddings = np.vstack(self.data["embedding"])
     self.index = faiss.IndexFlatL2(embeddings.shape[1])
     self.index.add(embeddings)
@@ -67,8 +68,11 @@ class VectorDatabase:
     cache_endpoint = ["embeddings", self.embedding_model.model, text_sha]
     if self.cache.check(*cache_endpoint):
       return self.cache.read_cache_np(*cache_endpoint)
-    result = self.embedding_model.query(text)
-    if len(result) == 0:
-      raise Exception(f"Invalid embedding array for {text}")
-    self.cache.save_cache_np(result, *cache_endpoint)
-    return result
+    try:
+      result = self.embedding_model.query(text)
+      if len(result) == 0:
+        raise Exception(f"Embedding failed for {text}")
+      self.cache.save_cache_np(result, *cache_endpoint)
+      return result
+    except Exception as e:
+      print(f"An error occurred while fetching the embedding the following text:\n{text}\n\nError: {str(e)}", file=sys.stderr)

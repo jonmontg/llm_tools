@@ -16,9 +16,7 @@ GPT_EMBEDDING_MODELS = {
 }
 
 def get_embedding_model(model, api_key=None):
-  if model == "codebert-base":
-    return CodebertBaseEmbeddings()
-  elif model == "unixcoder-base":
+  if model == "unixcoder-base":
     return UnixcoderBaseEmbeddings()
   elif model in GPT_EMBEDDING_MODELS:
     return GPTEmbeddings(model, api_key)
